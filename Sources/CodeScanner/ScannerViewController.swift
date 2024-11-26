@@ -140,7 +140,6 @@ extension CodeScannerView {
             super.viewDidLoad()
             self.addOrientationDidChangeObserver()
             self.setBackgroundColor()
-            self.handleCameraPermission()
         }
 
         override public func viewWillLayoutSubviews() {
@@ -168,12 +167,13 @@ extension CodeScannerView {
             super.viewDidAppear(animated)
             updateOrientation()
         }
-
-        override public func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-
-            setupSession()
-        }
+		
+		public override func viewSafeAreaInsetsDidChange() {
+			super.viewSafeAreaInsetsDidChange()
+			
+			self.handleCameraPermission()
+			setupSession()
+		}
       
         private func setupSession() {
             guard let captureSession else {
