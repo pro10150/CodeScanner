@@ -25,6 +25,8 @@ extension CodeScannerView {
         private let showViewfinder: Bool
         
         let fallbackVideoCaptureDevice = AVCaptureDevice.default(for: .video)
+		
+		let metadataOutput = AVCaptureMetadataOutput()
         
         private var isGalleryShowing: Bool = false {
             didSet {
@@ -140,11 +142,21 @@ extension CodeScannerView {
             super.viewDidLoad()
             self.addOrientationDidChangeObserver()
             self.setBackgroundColor()
+            self.handleCameraPermission()
         }
 
         override public func viewWillLayoutSubviews() {
             previewLayer?.frame = view.layer.bounds
         }
+		
+		public override func viewSafeAreaInsetsDidChange() {
+			super.viewSafeAreaInsetsDidChange()
+			
+			
+			if let focusedRect = focusedRect {
+				metadataOutput.rectOfInterest = previewLayer.metadataOutputRectConverted(fromLayerRect: focusedRect)
+			}
+		}
 
         @objc func updateOrientation() {
             guard let orientation = view.window?.windowScene?.interfaceOrientation else { return }
@@ -167,13 +179,12 @@ extension CodeScannerView {
             super.viewDidAppear(animated)
             updateOrientation()
         }
-		
-		public override func viewSafeAreaInsetsDidChange() {
-			super.viewSafeAreaInsetsDidChange()
-			
-			self.handleCameraPermission()
-			setupSession()
-		}
+
+        override public func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+
+            setupSession()
+        }
       
         private func setupSession() {
             guard let captureSession else {
@@ -266,10 +277,6 @@ extension CodeScannerView {
                 didFail(reason: .badInput)
                 return
             }
-            let metadataOutput = AVCaptureMetadataOutput()
-			if let focusedRect = focusedRect {
-				metadataOutput.rectOfInterest = previewLayer.metadataOutputRectConverted(fromLayerRect: focusedRect)
-			}
 
             if captureSession!.canAddOutput(metadataOutput) {
                 captureSession!.addOutput(metadataOutput)
