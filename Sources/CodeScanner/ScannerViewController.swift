@@ -21,6 +21,7 @@ extension CodeScannerView {
         var codesFound = Set<String>()
         var didFinishScanning = false
         var lastTime = Date(timeIntervalSince1970: 0)
+		var focusedRect: CGRect? = nil
         private let showViewfinder: Bool
         
         let fallbackVideoCaptureDevice = AVCaptureDevice.default(for: .video)
@@ -192,6 +193,7 @@ extension CodeScannerView {
 
             if !captureSession.isRunning {
                 DispatchQueue.global(qos: .userInteractive).async {
+					self.captureSession?.commitConfiguration()
                     self.captureSession?.startRunning()
                 }
             }
@@ -265,6 +267,9 @@ extension CodeScannerView {
                 return
             }
             let metadataOutput = AVCaptureMetadataOutput()
+			if let focusedRect = focusedRect {
+				metadataOutput.rectOfInterest = previewLayer.metadataOutputRectConverted(fromLayerRect: focusedRect)
+			}
 
             if captureSession!.canAddOutput(metadataOutput) {
                 captureSession!.addOutput(metadataOutput)

@@ -89,6 +89,7 @@ public struct CodeScannerView: UIViewControllerRepresentable {
     public var isPaused: Bool
     public var isGalleryPresented: Binding<Bool>
     public var videoCaptureDevice: AVCaptureDevice?
+	public var focusedRect: CGRect? = nil
     public var completion: (Result<ScanResult, ScanError>) -> Void
 
     public init(
@@ -104,6 +105,7 @@ public struct CodeScannerView: UIViewControllerRepresentable {
         isPaused: Bool = false,
         isGalleryPresented: Binding<Bool> = .constant(false),
         videoCaptureDevice: AVCaptureDevice? = AVCaptureDevice.bestForVideo,
+		focusedRect: CGRect? = nil,
         completion: @escaping (Result<ScanResult, ScanError>) -> Void
     ) {
         self.codeTypes = codeTypes
@@ -118,6 +120,7 @@ public struct CodeScannerView: UIViewControllerRepresentable {
         self.isPaused = isPaused
         self.isGalleryPresented = isGalleryPresented
         self.videoCaptureDevice = videoCaptureDevice
+		self.focusedRect = focusedRect
         self.completion = completion
     }
 
