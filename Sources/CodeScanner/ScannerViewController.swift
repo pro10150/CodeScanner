@@ -206,6 +206,10 @@ extension CodeScannerView {
                 DispatchQueue.global(qos: .userInteractive).async {
 					self.captureSession?.commitConfiguration()
                     self.captureSession?.startRunning()
+					
+					if let focusedRect = self.focusedRect {
+						self.metadataOutput.rectOfInterest = self.previewLayer.metadataOutputRectConverted(fromLayerRect: focusedRect)
+					}
                 }
             }
         }
