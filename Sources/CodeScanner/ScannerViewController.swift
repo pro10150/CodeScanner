@@ -210,6 +210,16 @@ extension CodeScannerView {
 					if let focusedRect = self.focusedRect {
 						self.metadataOutput.rectOfInterest = self.previewLayer.metadataOutputRectConverted(fromLayerRect: focusedRect)
 					}
+					
+					if captureSession.canAddOutput(self.metadataOutput) {
+						captureSession.addOutput(self.metadataOutput)
+						captureSession.addOutput(self.photoOutput)
+						self.metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+						self.metadataOutput.metadataObjectTypes = self.parentView.codeTypes
+					} else {
+						self.didFail(reason: .badOutput)
+						return
+					}
                 }
             }
         }
@@ -279,16 +289,6 @@ extension CodeScannerView {
                 captureSession!.addInput(videoInput)
             } else {
                 didFail(reason: .badInput)
-                return
-            }
-
-            if captureSession!.canAddOutput(metadataOutput) {
-                captureSession!.addOutput(metadataOutput)
-                captureSession!.addOutput(photoOutput)
-                metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-                metadataOutput.metadataObjectTypes = parentView.codeTypes
-            } else {
-                didFail(reason: .badOutput)
                 return
             }
         }
